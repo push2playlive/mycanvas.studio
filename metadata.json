@@ -1,0 +1,7 @@
+{
+  "name": "MyCanvas.studio",
+  "description": "A sci-fi/cyberpunk command center for AI-driven web app and video generation.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
