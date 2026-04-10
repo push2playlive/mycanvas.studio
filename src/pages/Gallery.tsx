@@ -59,6 +59,7 @@ export const Gallery = () => {
   const [prompt, setPrompt] = useState('');
   const [negativePrompt, setNegativePrompt] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('none');
+  const [selectedVideoStyle, setSelectedVideoStyle] = useState('none');
   const [aspectRatio, setAspectRatio] = useState('16:9');
   const [items, setItems] = useState<GalleryItem[]>(GALLERY_ITEMS);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
@@ -97,9 +98,13 @@ export const Gallery = () => {
     setVideoStatus('Initializing...');
 
     try {
-      const videoUrl = await generateVideo(prompt || "A cinematic drone shot of a futuristic city", (status) => {
-        setVideoStatus(status);
-      });
+      const videoUrl = await generateVideo(
+        prompt || "A cinematic drone shot of a futuristic city", 
+        { style: selectedVideoStyle },
+        (status) => {
+          setVideoStatus(status);
+        }
+      );
       setGeneratedVideo(videoUrl);
     } catch (error) {
       console.error("Failed to generate video:", error);
@@ -686,7 +691,7 @@ export const Gallery = () => {
                   />
                 </div>
 
-                {modalType === 'image' && (
+                {modalType === 'image' ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-mono text-white/40 uppercase tracking-widest">Negative Prompt</label>
@@ -724,6 +729,19 @@ export const Gallery = () => {
                         </select>
                       </div>
                     </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-mono text-white/40 uppercase tracking-widest">Video Style</label>
+                    <select 
+                      value={selectedVideoStyle}
+                      onChange={(e) => setSelectedVideoStyle(e.target.value)}
+                      className="w-full bg-black/40 border border-white/10 rounded-md py-2 px-3 text-xs font-mono focus:outline-none focus:border-purple-400/50 transition-colors appearance-none"
+                    >
+                      {['none', 'cinematic', 'drone shot', 'time-lapse', 'slow motion', 'cyberpunk', 'noir'].map(s => (
+                        <option key={s} value={s} className="bg-void">{s.toUpperCase()}</option>
+                      ))}
+                    </select>
                   </div>
                 )}
                 

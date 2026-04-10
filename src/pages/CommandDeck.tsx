@@ -55,7 +55,7 @@ export const CommandDeck = () => {
       }));
 
       try {
-        const url = await generateVideo(userPrompt, (status) => {
+        const url = await generateVideo(userPrompt, {}, (status) => {
           setBuildStatus(status);
           window.dispatchEvent(new CustomEvent('nexus-console-log', { 
             detail: { message: status, type: 'info' } 

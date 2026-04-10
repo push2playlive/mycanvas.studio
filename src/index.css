@@ -2,7 +2,7 @@
 
 @theme {
   --color-void: #050505;
-  --color-neon-cyan: #00f0ff;
+  --color-neon-cyan: var(--nexus-accent);
   --color-neon-magenta: #ff00ff;
   --color-neon-green: #0aff00;
   --color-surface: #0a0a0a;
@@ -17,7 +17,7 @@
   color-scheme: dark;
   --color-void: #050505;
   --color-surface: #0a0a0a;
-  --color-neon-cyan: #00f0ff;
+  --color-neon-cyan: var(--nexus-accent);
   --color-neon-magenta: #ff00ff;
   --color-neon-green: #0aff00;
   --nexus-cyan: #00ffcc;
@@ -27,6 +27,17 @@
   --glass-border: rgba(255, 255, 255, 0.1);
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.4);
+  --nexus-accent: #00ffcc; /* Default Sovereign Cyan */
+}
+
+/* All glowing elements now follow the Agent's DNA */
+.tactical-map-glow, .btn-primary, .status-ping {
+  box-shadow: 0 0 15px var(--nexus-accent);
+  border-color: var(--nexus-accent);
+}
+
+h2, h3, .amount {
+  color: var(--nexus-accent);
 }
 
 .galaxy-bg { background: radial-gradient(circle at center, #111 0%, #000 100%); }

@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 // Stylized dark world map texture
 const WORLD_MAP_URL = "https://unpkg.com/three-globe/example/img/earth-dark.jpg";
+const FALLBACK_MAP_URL = "https://unpkg.com/three-globe/example/img/earth-night.jpg";
 
 const ACTIVE_NODES = [
   { name: 'utubechat.com', lat: 40.7128, lng: -74.0060, city: 'New York' },
@@ -120,6 +121,12 @@ export const TacticalMap = () => {
         ref={globeRef}
         backgroundColor="rgba(0,0,0,0)"
         globeImageUrl={WORLD_MAP_URL}
+        onGlobeImageError={() => {
+          console.warn("Globe texture failed to load, switching to fallback.");
+          if (globeRef.current) {
+            globeRef.current.globeImageUrl(FALLBACK_MAP_URL);
+          }
+        }}
         showAtmosphere={true}
         atmosphereColor="#00f0ff"
         atmosphereDayAlpha={0.1}

@@ -32,6 +32,8 @@ const SYSTEM_ITEMS = [
   { icon: User, label: 'Profile', path: '/admin/profile' },
 ];
 
+import { AgentSwitcher } from '../Navigation/AgentSwitcher';
+
 export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const location = useLocation();
 
@@ -74,6 +76,11 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-4 space-y-8">
+              {/* Agent Switcher */}
+              <div className="px-2">
+                <AgentSwitcher />
+              </div>
+
               {/* Navigation */}
               <div>
                 <p className="px-4 text-[10px] font-mono uppercase tracking-[0.3em] text-white/20 mb-4">Navigation</p>

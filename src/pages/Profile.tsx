@@ -51,7 +51,12 @@ export const Profile = () => {
                 referrerPolicy="no-referrer"
               />
             ) : (
-              <User size={40} className="text-white/10 group-hover:text-neon-cyan/50 transition-colors" />
+              <img 
+                src="https://picsum.photos/seed/commander/200/200" 
+                alt="Commander Default" 
+                className="w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity"
+                referrerPolicy="no-referrer"
+              />
             )}
             <div className="absolute inset-0 bg-void/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <Camera size={20} className="text-neon-cyan" />

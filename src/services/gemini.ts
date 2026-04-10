@@ -23,7 +23,7 @@ export const generateAppCode = async (prompt: string, agentSystemPrompt: string)
   }
 };
 
-export const generateVideo = async (prompt: string, onProgress?: (status: string) => void) => {
+export const generateVideo = async (prompt: string, options?: { style?: string }, onProgress?: (status: string) => void) => {
   try {
     // Check if API key is selected
     if (!(window as any).aistudio?.hasSelectedApiKey()) {
@@ -34,9 +34,14 @@ export const generateVideo = async (prompt: string, onProgress?: (status: string
     const videoAi = new GoogleGenAI({ apiKey: process.env.API_KEY || process.env.GEMINI_API_KEY || "" });
 
     onProgress?.("Initializing neural video synthesis...");
+    
+    const finalPrompt = options?.style && options.style !== 'none' 
+      ? `${prompt}, in ${options.style} style` 
+      : prompt;
+
     let operation = await videoAi.models.generateVideos({
       model: 'veo-3.1-lite-generate-preview',
-      prompt: prompt,
+      prompt: finalPrompt,
       config: {
         numberOfVideos: 1,
         resolution: '720p',
