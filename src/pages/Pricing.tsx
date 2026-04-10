@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Check, Shield, Zap, Globe, Cpu, Terminal } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Check, Shield, Zap, Globe, Cpu, Terminal, ArrowRight, Database, Code, Github } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -8,149 +8,171 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const PricingCard = ({ 
-  tier, 
-  price, 
-  description, 
-  features, 
-  isPopular, 
-  color 
-}: { 
-  tier: string; 
-  price: string; 
-  description: string; 
-  features: string[]; 
-  isPopular?: boolean;
-  color: 'cyan' | 'magenta' | 'green'
-}) => {
-  const colorClasses = {
-    cyan: 'text-neon-cyan border-neon-cyan/20 bg-neon-cyan/5 shadow-[0_0_20px_rgba(0,240,255,0.1)]',
-    magenta: 'text-neon-magenta border-neon-magenta/20 bg-neon-magenta/5 shadow-[0_0_20px_rgba(255,0,255,0.1)]',
-    green: 'text-neon-green border-neon-green/20 bg-neon-green/5 shadow-[0_0_20px_rgba(10,255,0,0.1)]'
-  };
-
-  const buttonClasses = {
-    cyan: 'bg-neon-cyan text-void hover:bg-neon-cyan/80',
-    magenta: 'bg-neon-magenta text-void hover:bg-neon-magenta/80',
-    green: 'bg-neon-green text-void hover:bg-neon-green/80'
-  };
-
-  return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      className={cn(
-        "glass-panel p-8 rounded-xl border flex flex-col relative overflow-hidden",
-        isPopular ? colorClasses[color] : "border-white/10 bg-white/[0.02]"
-      )}
-    >
-      {isPopular && (
-        <div className={cn(
-          "absolute top-0 right-0 px-4 py-1 text-[8px] font-mono font-bold uppercase tracking-[0.2em]",
-          buttonClasses[color]
-        )}>
-          Recommended
-        </div>
-      )}
-      
-      <div className="mb-8">
-        <h3 className="text-xl font-bold font-mono uppercase tracking-tighter mb-2">{tier}</h3>
-        <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-bold font-mono">{price}</span>
-          <span className="text-white/30 text-xs font-mono">/mo</span>
-        </div>
-        <p className="mt-4 text-xs text-white/50 leading-relaxed">{description}</p>
-      </div>
-
-      <div className="flex-1 space-y-4 mb-8">
-        {features.map((feature, i) => (
-          <div key={i} className="flex items-center gap-3 text-xs text-white/70">
-            <Check size={14} className={cn(
-              color === 'cyan' ? "text-neon-cyan" : color === 'magenta' ? "text-neon-magenta" : "text-neon-green"
-            )} />
-            <span>{feature}</span>
-          </div>
-        ))}
-      </div>
-
-      <button className={cn(
-        "w-full py-3 rounded-md font-mono font-bold text-xs uppercase tracking-widest transition-all",
-        isPopular ? buttonClasses[color] : "bg-white/5 text-white hover:bg-white/10 border border-white/10"
-      )}>
-        Initialize Protocol
-      </button>
-    </motion.div>
-  );
-};
-
 export const Pricing = () => {
+  const [isBuyout, setIsBuyout] = useState(false);
+  const [credits, setCredits] = useState(100);
+
+  // Dynamic Monthly Price Logic
+  const getMonthlyPrice = (amt: number) => {
+    if (amt <= 25) return 19;
+    if (amt <= 45) return 29;
+    if (amt <= 100) return 49;
+    if (amt <= 1000) return 150;
+    return (amt * 0.15).toFixed(0); // Volume scaling
+  };
+
   return (
     <div className="h-full flex flex-col p-8 overflow-y-auto bg-void selection:bg-neon-cyan selection:text-void">
       {/* Header */}
-      <div className="text-center mb-16">
+      <div className="text-center mb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neon-cyan/30 bg-neon-cyan/5 mb-6"
         >
           <Shield size={12} className="text-neon-cyan" />
-          <span className="text-[10px] font-mono text-neon-cyan uppercase tracking-[0.2em]">Access Protocols</span>
+          <span className="text-[10px] font-mono text-neon-cyan uppercase tracking-[0.2em]">Sovereign Access</span>
         </motion.div>
         <h1 className="text-4xl md:text-5xl font-bold font-mono tracking-tighter uppercase mb-4">
-          Neural <span className="text-neon-cyan">Subscription</span>
+          Architect <span className="text-neon-cyan">Tier</span>
         </h1>
         <p className="text-white/40 text-sm font-mono uppercase tracking-widest max-w-2xl mx-auto">
-          Select your clearance level and unlock advanced Nexus OS capabilities
+          Full control over the Nexus limbs. Choose your uplink protocol.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto w-full">
-        <PricingCard
-          tier="Scout"
-          price="$0"
-          description="Basic access for independent operatives and neural explorers."
-          color="cyan"
-          features={[
-            "Standard Neural Uplink",
-            "Basic Agent Access (Commander)",
-            "1GB Secure Storage",
-            "Community Support",
-            "Public Gallery Access"
-          ]}
-        />
-        <PricingCard
-          tier="Operative"
-          price="$29"
-          description="Enhanced capabilities for professional developers and strategists."
-          isPopular
-          color="magenta"
-          features={[
-            "High-Speed Neural Uplink",
-            "All Agent Access (Guru, Artist, Verifier)",
-            "10GB Secure Storage",
-            "Priority Build Queue",
-            "Private Project Streams",
-            "GitHub Sync Integration"
-          ]}
-        />
-        <PricingCard
-          tier="Prime"
-          price="$99"
-          description="Full system control for elite architects and enterprise commanders."
-          color="green"
-          features={[
-            "Ultra-Low Latency Uplink",
-            "Unlimited Agent Instances",
-            "100GB Secure Storage",
-            "Dedicated Support Channel",
-            "Custom Agent Training",
-            "Advanced Security Audits",
-            "White-label Deployment"
-          ]}
-        />
+      <div className="max-w-xl mx-auto w-full">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass-panel p-8 rounded-2xl border border-neon-cyan/20 bg-neon-cyan/5 shadow-[0_0_40px_rgba(0,240,255,0.05)] relative overflow-hidden"
+        >
+          {/* Background Glow */}
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-neon-cyan/10 blur-[80px] rounded-full pointer-events-none" />
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-8">
+              <div className="px-3 py-1 bg-neon-cyan text-void text-[10px] font-mono font-bold uppercase tracking-widest rounded">
+                Sovereign Access
+              </div>
+              <div className="text-white/20 font-mono text-[10px] uppercase tracking-widest">Protocol v4.2</div>
+            </div>
+
+            {/* THE SWITCH: Monthly vs One-Time Buyout */}
+            <div className="flex p-1 bg-white/5 rounded-xl mb-8 border border-white/5">
+              <button 
+                onClick={() => setIsBuyout(false)}
+                className={cn(
+                  "flex-1 py-3 rounded-lg text-[10px] font-mono font-bold uppercase tracking-widest transition-all",
+                  !isBuyout ? "bg-neon-cyan text-void shadow-[0_0_20px_rgba(0,240,255,0.3)]" : "text-white/40 hover:text-white"
+                )}
+              >
+                Monthly Subscription
+              </button>
+              <button 
+                onClick={() => setIsBuyout(true)}
+                className={cn(
+                  "flex-1 py-3 rounded-lg text-[10px] font-mono font-bold uppercase tracking-widest transition-all",
+                  isBuyout ? "bg-neon-cyan text-void shadow-[0_0_20px_rgba(0,240,255,0.3)]" : "text-white/40 hover:text-white"
+                )}
+              >
+                One-Time Buyout
+              </button>
+            </div>
+
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center gap-1 text-neon-cyan mb-2">
+                <span className="text-2xl font-mono font-bold">$</span>
+                <span className="text-6xl font-mono font-bold tracking-tighter">
+                  {isBuyout ? "930" : getMonthlyPrice(credits)}
+                </span>
+                {!isBuyout && <span className="text-xl font-mono text-white/20">/mo</span>}
+              </div>
+              <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest">
+                {isBuyout ? "Lifetime Ownership" : "Neural Credit Uplink"}
+              </p>
+            </div>
+
+            <AnimatePresence mode="wait">
+              {!isBuyout ? (
+                <motion.div
+                  key="subscription"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-6"
+                >
+                  <div className="space-y-3">
+                    <label className="block text-[10px] font-mono uppercase tracking-widest text-white/40 ml-1">
+                      Neural Credits
+                    </label>
+                    <div className="relative">
+                      <select 
+                        value={credits} 
+                        onChange={(e) => setCredits(Number(e.target.value))}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm font-mono text-white focus:outline-none focus:border-neon-cyan/50 transition-all appearance-none cursor-pointer"
+                      >
+                        <option value={25} className="bg-void">25 Credits ($19/mo)</option>
+                        <option value={45} className="bg-void">45 Credits ($29/mo)</option>
+                        <option value={100} className="bg-void">100 Credits ($49/mo)</option>
+                        <option value={1000} className="bg-void">1,000 Credits ($150/mo)</option>
+                        <option value={10000} className="bg-void">10,000 Credits ($1,500/mo)</option>
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                        <Zap size={16} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { icon: Database, label: 'Cloud Storage' },
+                      { icon: Cpu, label: 'Neural Compute' },
+                    ].map((feat, i) => (
+                      <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5">
+                        <feat.icon size={14} className="text-neon-cyan" />
+                        <span className="text-[10px] font-mono text-white/60 uppercase">{feat.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="buyout"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-4"
+                >
+                  {[
+                    { icon: Code, text: 'Lifetime Source Code Access' },
+                    { icon: Github, text: 'Export to GitHub Repo' },
+                    { icon: Shield, text: 'Remove "Built with Studio" Badge' },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-neon-cyan/5 border border-neon-cyan/10">
+                      <div className="p-2 bg-neon-cyan/10 rounded-lg">
+                        <item.icon size={18} className="text-neon-cyan" />
+                      </div>
+                      <span className="text-xs font-mono text-white/80">{item.text}</span>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <button className="w-full mt-8 group relative py-5 bg-neon-cyan text-void font-mono font-bold uppercase tracking-[0.3em] text-xs rounded-xl overflow-hidden transition-all hover:shadow-[0_0_50px_rgba(0,240,255,0.4)]">
+              <span className="relative z-10 flex items-center justify-center gap-3">
+                {isBuyout ? "Purchase Ownership" : "Activate Credits"}
+                <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+            </button>
+          </div>
+        </motion.div>
       </div>
 
       {/* Trust Badges */}
-      <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/5 pt-12">
+      <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/5 pt-12 max-w-6xl mx-auto w-full">
         {[
           { icon: Shield, label: 'Secure Encryption', desc: 'AES-512-GCM' },
           { icon: Zap, label: 'Instant Uplink', desc: '12ms Latency' },

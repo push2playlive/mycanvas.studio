@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { LayoutDashboard, Shield, Globe, Terminal, Image as ImageIcon, FolderKanban, Settings, User, CreditCard } from 'lucide-react';
+import { LayoutDashboard, Globe, Terminal, Image as ImageIcon, FolderKanban, Settings, Target, Wrench, ListTodo, Rocket, Wallet } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -10,15 +10,16 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const DOCK_ITEMS = [
+  { icon: Globe, label: 'Home', path: '/' },
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-  { icon: Shield, label: 'Mission Control', path: '/admin/mission-control' },
-  { icon: Globe, label: 'War Room', path: '/admin/war-room' },
-  { icon: Terminal, label: 'Command Centre', path: '/admin/command' },
+  { icon: ListTodo, label: 'Tasks', path: '/admin/tasks' },
+  { icon: Rocket, label: 'Market', path: '/admin/market' },
+  { icon: Target, label: 'War Room', path: '/admin/war-room' },
+  { icon: Wrench, label: 'Command', path: '/admin/command' },
   { icon: ImageIcon, label: 'Gallery', path: '/admin/gallery' },
   { icon: FolderKanban, label: 'Projects', path: '/admin/projects' },
-  { icon: CreditCard, label: 'Pricing', path: '/admin/pricing' },
+  { icon: Wallet, label: 'The Vault', path: '/admin/account' },
   { icon: Settings, label: 'Settings', path: '/admin/settings' },
-  { icon: User, label: 'Profile', path: '/admin/profile' },
 ];
 
 export const Dock = () => {

@@ -15,11 +15,143 @@
 
 :root {
   color-scheme: dark;
+  --color-void: #050505;
+  --color-surface: #0a0a0a;
+  --color-neon-cyan: #00f0ff;
+  --color-neon-magenta: #ff00ff;
+  --color-neon-green: #0aff00;
+  --nexus-cyan: #00ffcc;
+  --nexus-dark: #0a0a0a;
+  --nexus-border: #333;
+  --glass-bg: rgba(10, 10, 10, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.4);
+}
+
+.galaxy-bg { background: radial-gradient(circle at center, #111 0%, #000 100%); }
+
+.nexus-container {
+  @apply h-full flex flex-col p-8 overflow-y-auto;
+}
+
+.profile-header {
+  @apply flex items-center gap-8 mb-12 border-b border-white/5 pb-6;
+}
+
+.avatar-orb {
+  @apply relative w-24 h-24 rounded-full border-2 border-neon-cyan/30 p-1;
+}
+
+.avatar-orb img {
+  @apply w-full h-full rounded-full object-cover;
+}
+
+.status-ring {
+  @apply absolute bottom-1 right-1 w-5 h-5 rounded-full border-2 border-void;
+}
+
+.status-ring.online {
+  @apply bg-neon-green shadow-[0_0_10px_rgba(10,255,0,0.5)];
+}
+
+.profile-info h1 {
+  @apply text-3xl font-bold font-mono tracking-tighter uppercase;
+}
+
+.profile-info .rank {
+  @apply text-neon-cyan/60 text-[10px] font-mono uppercase tracking-[0.3em];
+}
+
+.stats-grid {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-8 mb-12;
+}
+
+.stat-card {
+  @apply bg-surface/50 backdrop-blur-md border border-white/10 p-8 rounded-xl text-center;
+  border: 1px solid var(--nexus-border);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.05);
+}
+
+.stat-card h3 {
+  @apply text-[10px] font-mono uppercase tracking-[0.2em] text-white/40 mb-2;
+}
+
+.stat-card p {
+  @apply text-4xl font-bold font-mono text-neon-cyan;
+}
+
+.bio-section {
+  @apply bg-surface/50 backdrop-blur-md border border-white/10 p-8 rounded-xl mb-12;
+  border: 1px solid var(--nexus-border);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.05);
+}
+
+.bio-section h3 {
+  @apply text-sm font-bold font-mono uppercase tracking-[0.2em] text-white/60 mb-4;
+}
+
+.bio-section p {
+  @apply text-lg font-mono text-white/80 italic;
+}
+
+.shadow-shield {
+  border: 1px solid var(--nexus-border);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.05);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.nexus-input, .nexus-slider {
+  background: #1a1a1a;
+  border: 1px solid var(--nexus-border);
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 5px;
+}
+
+.nexus-input:focus { border-color: var(--nexus-cyan); outline: none; }
+
+:root.light {
+  color-scheme: light;
+  --color-void: #f5f5f7;
+  --color-surface: #ffffff;
+  --color-neon-cyan: #0071e3;
+  --color-neon-magenta: #ff2d55;
+  --color-neon-green: #34c759;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --text-primary: #000000;
+  --text-secondary: rgba(0, 0, 0, 0.4);
 }
 
 body {
-  @apply bg-void text-white font-sans overflow-hidden;
+  @apply bg-void text-[color:var(--text-primary)] font-sans overflow-hidden transition-colors duration-300;
 }
+
+.glass-panel {
+  @apply bg-surface/50 backdrop-blur-md border border-white/10;
+}
+
+/* Override Tailwind classes for light mode */
+:root.light .text-white { color: var(--text-primary); }
+:root.light .text-white\/90 { color: rgba(0, 0, 0, 0.9); }
+:root.light .text-white\/80 { color: rgba(0, 0, 0, 0.8); }
+:root.light .text-white\/60 { color: rgba(0, 0, 0, 0.6); }
+:root.light .text-white\/40 { color: rgba(0, 0, 0, 0.4); }
+:root.light .text-white\/30 { color: rgba(0, 0, 0, 0.3); }
+:root.light .text-white\/20 { color: rgba(0, 0, 0, 0.2); }
+:root.light .text-white\/10 { color: rgba(0, 0, 0, 0.1); }
+
+:root.light .bg-white\/5 { background-color: rgba(0, 0, 0, 0.05); }
+:root.light .bg-white\/10 { background-color: rgba(0, 0, 0, 0.1); }
+:root.light .bg-white\/\[0\.02\] { background-color: rgba(0, 0, 0, 0.02); }
+:root.light .bg-white\/\[0\.01\] { background-color: rgba(0, 0, 0, 0.01); }
+
+:root.light .border-white\/5 { border-color: rgba(0, 0, 0, 0.05); }
+:root.light .border-white\/10 { border-color: rgba(0, 0, 0, 0.1); }
+:root.light .border-white\/20 { border-color: rgba(0, 0, 0, 0.2); }
 
 /* Scrollbar styling for that technical feel */
 ::-webkit-scrollbar {
@@ -30,10 +162,6 @@ body {
 }
 ::-webkit-scrollbar-thumb {
   @apply bg-neon-cyan/30 rounded-full hover:bg-neon-cyan/60 transition-colors;
-}
-
-.glass-panel {
-  @apply bg-surface/50 backdrop-blur-md border border-white/10;
 }
 
 .neon-border-cyan {

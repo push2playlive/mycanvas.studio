@@ -13,6 +13,21 @@ export const LiveConsole = () => {
       '[SYSTEM] Kernel v2.4.0-stable loaded.',
     ]);
 
+    const handleCustomLog = (e: any) => {
+      const { message, type } = e.detail;
+      const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+      const prefix = type === 'error' ? '[ERROR]' : type === 'success' ? '[SUCCESS]' : '[INFO]';
+      const newLog = `> ${timestamp} ${prefix} ${message}`;
+      
+      setLogs((prev) => {
+        const next = [...prev, newLog];
+        if (next.length > 15) return next.slice(next.length - 15);
+        return next;
+      });
+    };
+
+    window.addEventListener('nexus-console-log', handleCustomLog);
+
     const intervalId = window.setInterval(() => {
       const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
 
@@ -37,7 +52,10 @@ export const LiveConsole = () => {
       });
     }, 2500);
 
-    return () => window.clearInterval(intervalId);
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener('nexus-console-log', handleCustomLog);
+    };
   }, []);
 
   useEffect(() => {

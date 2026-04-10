@@ -34,15 +34,49 @@ export const NexusGlobe = () => {
   }, []);
 
   useEffect(() => {
-    if (globeRef.current) {
-      // Auto-rotate
-      globeRef.current.controls().autoRotate = true;
-      globeRef.current.controls().autoRotateSpeed = 0.8;
-      globeRef.current.controls().enableZoom = false;
-      
-      // Set initial camera position
-      globeRef.current.pointOfView({ lat: 20, lng: 0, altitude: 2.2 });
-    }
+    const initGlobe = () => {
+      if (globeRef.current) {
+        // Auto-rotate
+        if (typeof globeRef.current.controls === 'function') {
+          const controls = globeRef.current.controls();
+          if (controls) {
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.8;
+            controls.enableZoom = false;
+          }
+        }
+        
+        // Set initial camera position
+        if (typeof globeRef.current.pointOfView === 'function') {
+          globeRef.current.pointOfView({ lat: 20, lng: 0, altitude: 2.2 });
+        }
+
+        // Custom Globe Material
+        if (typeof globeRef.current.getGlobeMaterial === 'function') {
+          const globeMaterial = globeRef.current.getGlobeMaterial();
+          if (globeMaterial) {
+            globeMaterial.color = new THREE.Color(0x000000);
+            globeMaterial.emissive = new THREE.Color(0x00f0ff);
+            globeMaterial.emissiveIntensity = 0.1;
+            globeMaterial.transparent = true;
+            globeMaterial.opacity = 0.8;
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    // Try to initialize
+    let attempts = 0;
+    const interval = setInterval(() => {
+      if (initGlobe() || attempts > 20) {
+        clearInterval(interval);
+      }
+      attempts++;
+    }, 200);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -68,15 +102,6 @@ export const NexusGlobe = () => {
         hexMargin={0.2}
         hexTopColor={() => 'rgba(0, 240, 255, 0.1)'}
         hexSideColor={() => 'rgba(0, 240, 255, 0.05)'}
-        
-        onGlobeReady={() => {
-          const globeMaterial = globeRef.current.getGlobeMaterial();
-          globeMaterial.color = new THREE.Color(0x000000);
-          globeMaterial.emissive = new THREE.Color(0x00f0ff);
-          globeMaterial.emissiveIntensity = 0.1;
-          globeMaterial.transparent = true;
-          globeMaterial.opacity = 0.8;
-        }}
       />
     </div>
   );

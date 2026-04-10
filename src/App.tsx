@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { TopBar } from './components/layout/TopBar';
 import { Dock } from './components/layout/Dock';
@@ -15,23 +15,40 @@ import { Profile } from './pages/Profile';
 import { Gallery } from './pages/Gallery';
 import { Projects } from './pages/Projects';
 import { Pricing } from './pages/Pricing';
+import { Account } from './pages/Account';
 import { WarRoom } from './pages/WarRoom';
 import { Auth } from './pages/Auth';
+import { Tasks } from './pages/Tasks';
+import { MarketDispatcher } from './pages/MarketDispatcher';
 
-const AdminLayout = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex flex-col h-screen w-screen bg-void overflow-hidden text-white font-sans">
-    <TopBar />
-    <main className="flex-1 relative overflow-hidden pb-24">
-      {/* Background Ambient Glows */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-neon-cyan/5 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-neon-magenta/5 blur-[120px] rounded-full pointer-events-none" />
-      {children}
-    </main>
-    <Dock />
-  </div>
-);
+import { AdminLayout } from './components/layout/AdminLayout';
 
 export default function App() {
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('nexus-theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+
+    const handleThemeChange = () => {
+      const theme = localStorage.getItem('nexus-theme');
+      if (theme === 'light') {
+        document.documentElement.classList.add('light');
+      } else {
+        document.documentElement.classList.remove('light');
+      }
+    };
+
+    window.addEventListener('storage', handleThemeChange);
+    window.addEventListener('nexus-theme-change', handleThemeChange);
+    return () => {
+      window.removeEventListener('storage', handleThemeChange);
+      window.removeEventListener('nexus-theme-change', handleThemeChange);
+    };
+  }, []);
+
   return (
     <Router>
       <Routes>
@@ -46,9 +63,12 @@ export default function App() {
               <Route path="/command" element={<CommandDeck />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/projects" element={<Projects />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/market" element={<MarketDispatcher />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/account" element={<Account />} />
             </Routes>
           </AdminLayout>
         } />

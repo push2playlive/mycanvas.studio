@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Globe as GlobeIcon, Zap, Shield, Target, Activity, Users, Radio } from 'lucide-react';
-import { TacticalMap } from '../components/TacticalMap';
+import { Shield, ShieldAlert, Users, Activity, Terminal, Cpu, Globe, Search } from 'lucide-react';
+import { NetworkRadar } from '../components/war-room/NetworkRadar';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -9,170 +9,203 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const StatCard = ({ label, value, icon: Icon, color }: { label: string, value: string, icon: any, color: string }) => (
-  <div className="glass-panel p-4 rounded-xl border border-white/5 bg-white/[0.02]">
-    <div className="flex items-center gap-3 mb-2">
-      <div className={cn("p-2 rounded-lg", color)}>
-        <Icon size={16} />
-      </div>
-      <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">{label}</span>
-    </div>
-    <div className="text-xl font-bold font-mono text-white">{value}</div>
-  </div>
-);
+const THREATS = [
+  { id: 1, name: 'DDoS Attack', ip: '203.0.113.0/24', status: 'ACTIVE', time: '2m ago', color: 'text-neon-magenta', bg: 'bg-neon-magenta/10' },
+  { id: 2, name: 'Brute Force', ip: '198.51.100.42', status: 'MITIGATED', time: '15m ago', color: 'text-neon-green', bg: 'bg-neon-green/10' },
+  { id: 3, name: 'Port Scan', ip: '192.0.2.100', status: 'MONITORING', time: '1h ago', color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
+  { id: 4, name: 'Suspicious Login', ip: 'internal', status: 'RESOLVED', time: '3h ago', color: 'text-white/40', bg: 'bg-white/5' },
+];
+
+const TEAM = [
+  { name: 'Commander', role: 'Lead', status: 'online', initial: 'C', color: 'bg-neon-cyan' },
+  { name: 'Tactical', role: 'Analyst', status: 'online', initial: 'T', color: 'bg-blue-500' },
+  { name: 'Support', role: 'Engineer', status: 'away', initial: 'S', color: 'bg-neon-magenta' },
+  { name: 'Recon', role: 'Scout', status: 'online', initial: 'R', color: 'bg-neon-green' },
+];
+
+const OPERATIONS = [
+  { name: 'Operation Firewall', team: 'Alpha Squad', progress: 78, status: 'active', color: 'bg-neon-green' },
+  { name: 'Data Migration', team: 'Beta Team', progress: 0, status: 'pending', color: 'bg-yellow-400' },
+  { name: 'Security Audit', team: 'Gamma Unit', progress: 100, status: 'completed', color: 'bg-neon-cyan' },
+  { name: 'System Update', team: 'Delta Crew', progress: 45, status: 'in-progress', color: 'bg-blue-500' },
+];
 
 export const WarRoom = () => {
+  const [isScanning, setIsScanning] = React.useState(true);
+
   return (
-    <div className="h-full flex flex-col bg-void selection:bg-neon-cyan selection:text-void relative overflow-hidden">
-      {/* Background Globe */}
-      <div className="absolute inset-0 z-0 opacity-40">
-        <TacticalMap />
+    <div className="h-full flex flex-col bg-void p-8 overflow-y-auto scrollbar-hide">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-neon-magenta/10 rounded-lg border border-neon-magenta/20">
+            <Globe className="text-neon-magenta" size={24} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold font-mono tracking-tighter uppercase">War Room</h1>
+            <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em]">Tactical Operations Center</p>
+          </div>
+        </div>
+        <button 
+          onClick={() => setIsScanning(!isScanning)}
+          className={cn(
+            "flex items-center gap-2 px-6 py-2 border font-mono text-xs uppercase tracking-widest rounded-md transition-all",
+            isScanning 
+              ? "bg-neon-magenta/10 border-neon-magenta/30 text-neon-magenta animate-pulse" 
+              : "bg-white/5 border-white/10 text-white/40"
+          )}
+        >
+          <Search size={14} />
+          {isScanning ? 'Scanning...' : 'Start Scan'}
+        </button>
       </div>
 
-      {/* Content Overlay */}
-      <div className="relative z-10 flex flex-col h-full p-8">
-        {/* Header */}
-        <div className="flex justify-between items-start mb-12">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-6 h-6 bg-neon-magenta flex items-center justify-center rounded-sm shadow-[0_0_15px_rgba(255,0,255,0.4)]">
-                <GlobeIcon size={14} className="text-void" />
-              </div>
-              <h1 className="text-2xl font-bold font-mono tracking-tighter uppercase">
-                War <span className="text-neon-magenta">Room</span>
-              </h1>
-            </div>
-            <p className="text-white/30 text-[10px] font-mono uppercase tracking-[0.3em]">
-              Global Neural Network & Operational Oversight
-            </p>
+      {/* Alert Banner */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8 p-4 bg-neon-magenta/5 border border-neon-magenta/20 rounded-xl flex items-center justify-between"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-lg bg-neon-magenta/10 flex items-center justify-center">
+            <ShieldAlert className="text-neon-magenta" size={20} />
           </div>
-
-          <div className="flex gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-neon-green/30 bg-neon-green/5">
-              <div className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse" />
-              <span className="text-[10px] font-mono text-neon-green uppercase tracking-widest">Live Uplink</span>
-            </div>
+          <div>
+            <p className="text-xs font-bold text-white uppercase tracking-tight">CRITICAL ALERT: Elevated threat level detected</p>
+            <p className="text-[10px] text-white/40 font-mono">3 active threats require immediate attention</p>
           </div>
         </div>
+        <div className="px-3 py-1 bg-neon-magenta/20 border border-neon-magenta/40 rounded text-[10px] font-mono text-neon-magenta uppercase font-bold">
+          Threat Level: High
+        </div>
+      </motion.div>
 
-        {/* Main Grid */}
-        <div className="flex-1 grid grid-cols-12 gap-8">
-          {/* Left Stats */}
-          <div className="col-span-3 space-y-4">
-            <StatCard 
-              label="Active Operatives" 
-              value="1,244" 
-              icon={Users} 
-              color="bg-neon-cyan/10 text-neon-cyan" 
-            />
-            <StatCard 
-              label="Neural Latency" 
-              value="12ms" 
-              icon={Zap} 
-              color="bg-neon-magenta/10 text-neon-magenta" 
-            />
-            <StatCard 
-              label="System Integrity" 
-              value="99.9%" 
-              icon={Shield} 
-              color="bg-neon-green/10 text-neon-green" 
-            />
-            
-            <div className="glass-panel p-6 rounded-xl border border-white/5 bg-white/[0.02] mt-8">
-              <h3 className="text-[10px] font-mono uppercase tracking-widest text-white/40 mb-4 flex items-center gap-2">
-                <Radio size={12} className="text-neon-magenta" /> Signal Strength
-              </h3>
-              <div className="space-y-2">
-                {[80, 45, 90, 60, 75].map((w, i) => (
-                  <div key={i} className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${w}%` }}
-                      className="h-full bg-neon-cyan/50"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+      <div className="grid grid-cols-12 gap-6 mb-8">
+        {/* Threat Monitor */}
+        <div className="col-span-8 glass-panel rounded-xl overflow-hidden flex flex-col">
+          <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
+            <h3 className="text-[10px] font-mono uppercase tracking-widest text-white/80 flex items-center gap-2">
+              <Shield size={14} /> Threat Monitor
+            </h3>
+            <span className="text-[8px] font-mono text-white/20 uppercase">Live Feed</span>
           </div>
-
-          {/* Center Space (Globe is here) */}
-          <div className="col-span-6" />
-
-          {/* Right Missions & Threats */}
-          <div className="col-span-3 space-y-6">
-            <div className="glass-panel h-[300px] rounded-xl border border-white/5 bg-white/[0.02] flex flex-col overflow-hidden">
-              <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">
-                <h3 className="text-[10px] font-mono uppercase tracking-widest text-white/60 flex items-center gap-2">
-                  <Target size={14} className="text-neon-magenta" /> Active Missions
-                </h3>
-                <span className="text-[8px] font-mono text-white/20">4 Total</span>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {[
-                  { title: 'Project Nexus', status: 'In Progress', location: 'Tokyo, JP' },
-                  { title: 'Neural Breach', status: 'Critical', location: 'Berlin, DE' },
-                  { title: 'Data Extraction', status: 'Standby', location: 'San Francisco, US' },
-                  { title: 'System Audit', status: 'Completed', location: 'London, UK' },
-                ].map((mission, i) => (
-                  <div key={i} className="p-3 rounded-lg border border-white/5 bg-white/[0.02] hover:border-white/10 transition-all group">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="text-xs font-bold text-white/80 group-hover:text-white">{mission.title}</h4>
-                      <span className={cn(
-                        "text-[8px] font-mono uppercase px-1.5 py-0.5 rounded",
-                        mission.status === 'Critical' ? "bg-neon-magenta/10 text-neon-magenta" :
-                        mission.status === 'Completed' ? "bg-neon-green/10 text-neon-green" :
-                        "bg-neon-cyan/10 text-neon-cyan"
-                      )}>
-                        {mission.status}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[8px] font-mono text-white/20 uppercase">
-                      <Activity size={10} />
-                      <span>{mission.location}</span>
-                    </div>
+          <div className="p-4 space-y-4">
+            {THREATS.map((threat) => (
+              <div key={threat.id} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all">
+                <div className="flex gap-4">
+                  <div className={cn("w-2 h-2 rounded-full mt-1.5", threat.status === 'ACTIVE' ? 'bg-neon-magenta animate-pulse' : 'bg-white/20')} />
+                  <div>
+                    <p className="text-sm font-bold text-white/90">{threat.name}</p>
+                    <p className="text-[10px] font-mono text-white/30">{threat.ip}</p>
+                    {threat.status === 'ACTIVE' && (
+                      <div className="flex gap-2 mt-3">
+                        <button className="px-3 py-1 bg-neon-magenta/10 border border-neon-magenta/20 text-neon-magenta text-[10px] font-mono rounded hover:bg-neon-magenta/20 transition-all">Block IP</button>
+                        <button className="px-3 py-1 bg-white/5 border border-white/10 text-white/40 text-[10px] font-mono rounded hover:bg-white/10 transition-all">Investigate</button>
+                        <button className="px-3 py-1 bg-white/5 border border-white/10 text-white/40 text-[10px] font-mono rounded hover:bg-white/10 transition-all">Ignore</button>
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="glass-panel flex-1 rounded-xl border border-white/5 bg-white/[0.02] flex flex-col overflow-hidden">
-              <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">
-                <h3 className="text-[10px] font-mono uppercase tracking-widest text-neon-magenta flex items-center gap-2">
-                  <Shield size={14} /> Threat Matrix
-                </h3>
-                <div className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-neon-magenta animate-pulse" />
-                  <span className="text-[8px] font-mono text-neon-magenta uppercase">Live</span>
+                </div>
+                <div className="text-right">
+                  <span className={cn("text-[8px] font-mono px-2 py-0.5 rounded uppercase font-bold", threat.bg, threat.color)}>
+                    {threat.status}
+                  </span>
+                  <p className="text-[10px] font-mono text-white/20 mt-2">{threat.time}</p>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto p-4 font-mono text-[9px] space-y-2">
-                {[
-                  { ip: '192.168.1.42', type: 'DDoS_BLOCK', origin: 'RU', time: '0.2s ago' },
-                  { ip: '45.12.99.102', type: 'BOT_SCRAPE', origin: 'CN', time: '1.4s ago' },
-                  { ip: '102.44.12.8', type: 'SQL_INJECT', origin: 'BR', time: '3.1s ago' },
-                  { ip: '88.21.4.55', type: 'BRUTE_FORCE', origin: 'US', time: '5.8s ago' },
-                ].map((threat, i) => (
-                  <div key={i} className="flex items-center justify-between py-1 border-b border-white/5 last:border-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-neon-magenta">[{threat.origin}]</span>
-                      <span className="text-white/60">{threat.ip}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-white/30">{threat.type}</span>
-                      <span className="text-white/10">{threat.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Footer Info */}
-        <div className="mt-auto pt-12 flex items-center justify-between text-[8px] font-mono text-white/10 uppercase tracking-[0.4em]">
-          <span>Nexus_OS // War_Room // Global_Relay_Active</span>
-          <span>Clearance_Level: 5</span>
+        {/* Team Status */}
+        <div className="col-span-4 space-y-6">
+          <div className="glass-panel rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-white/5 bg-white/5">
+              <h3 className="text-[10px] font-mono uppercase tracking-widest text-white/80 flex items-center gap-2">
+                <Users size={14} /> Team Status
+              </h3>
+            </div>
+            <div className="p-4 space-y-4">
+              {TEAM.map((member, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center text-void font-bold", member.color)}>
+                      {member.initial}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white/90 leading-none mb-1">{member.name}</p>
+                      <p className="text-[10px] font-mono text-white/30 uppercase">{member.role}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={cn("text-[10px] font-mono", member.status === 'online' ? 'text-neon-green' : 'text-white/20')}>
+                      {member.status}
+                    </span>
+                    <div className={cn("w-1.5 h-1.5 rounded-full", member.status === 'online' ? 'bg-neon-green' : 'bg-white/20')} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="glass-panel p-4 rounded-xl border border-white/5">
+              <p className="text-[10px] font-mono text-white/20 uppercase mb-1">Protected</p>
+              <p className="text-xl font-bold font-mono text-white">99.9%</p>
+            </div>
+            <div className="glass-panel p-4 rounded-xl border border-white/5">
+              <p className="text-[10px] font-mono text-white/20 uppercase mb-1">Active</p>
+              <p className="text-xl font-bold font-mono text-white">24</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Active Operations */}
+      <div className="glass-panel rounded-xl overflow-hidden mb-8">
+        <div className="p-4 border-b border-white/5 bg-white/5">
+          <h3 className="text-[10px] font-mono uppercase tracking-widest text-white/80 flex items-center gap-2">
+            <Activity size={14} /> Active Operations
+          </h3>
+        </div>
+        <div className="p-6 grid grid-cols-4 gap-8">
+          {OPERATIONS.map((op, i) => (
+            <div key={i} className="space-y-3">
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-xs font-bold text-white/90 leading-none mb-1">{op.name}</p>
+                  <p className="text-[10px] font-mono text-white/30 uppercase">{op.team}</p>
+                </div>
+                <span className={cn("text-[8px] font-mono px-1.5 py-0.5 rounded uppercase", 
+                  op.status === 'active' ? 'bg-neon-green/10 text-neon-green' :
+                  op.status === 'completed' ? 'bg-neon-cyan/10 text-neon-cyan' :
+                  'bg-white/5 text-white/40'
+                )}>
+                  {op.status}
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${op.progress}%` }}
+                  className={cn("h-full", op.color)}
+                />
+              </div>
+              <p className="text-[10px] font-mono text-white/20 text-right">{op.progress}%</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Network Radar */}
+      <div className="glass-panel rounded-xl overflow-hidden h-80">
+        <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
+          <h3 className="text-[10px] font-mono uppercase tracking-widest text-white/80 flex items-center gap-2">
+            <Terminal size={14} /> Network Radar
+          </h3>
+        </div>
+        <div className="flex-1 h-full relative">
+          <NetworkRadar />
         </div>
       </div>
     </div>
