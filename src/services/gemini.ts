@@ -107,3 +107,26 @@ export const generateImage = async (prompt: string, options?: { aspectRatio?: st
     throw error;
   }
 };
+
+export const chatWithAgent = async (prompt: string, systemPrompt: string, history: { role: 'user' | 'agent', text: string }[]) => {
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3.1-flash-preview",
+      contents: [
+        ...history.map(h => ({
+          role: h.role === 'user' ? 'user' : 'model',
+          parts: [{ text: h.text }]
+        })),
+        { role: 'user', parts: [{ text: prompt }] }
+      ],
+      config: {
+        systemInstruction: systemPrompt
+      }
+    });
+
+    return response.text || "Neural link stable, but no data received.";
+  } catch (error) {
+    console.error("Agent Chat Error:", error);
+    throw error;
+  }
+};

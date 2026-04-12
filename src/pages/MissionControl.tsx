@@ -44,7 +44,8 @@ const COLOR_CLASSES: Record<
 
 function ControlModule(props: {
   title: string;
-  icon: typeof Database;
+  icon?: typeof Database;
+  imageUrl?: string;
   color: ColorKey;
   onClick: () => void;
 }) {
@@ -63,7 +64,21 @@ function ControlModule(props: {
       )}
     >
       <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      <props.icon className={cn('w-10 h-10 mb-4 transition-colors', classes.icon)} />
+      
+      {props.imageUrl ? (
+        <div className="relative w-16 h-16 mb-4 rounded-lg overflow-hidden border border-white/10 group-hover:border-white/30 transition-all">
+          <img 
+            src={props.imageUrl} 
+            alt={props.title} 
+            className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-void/80 to-transparent" />
+        </div>
+      ) : props.icon && (
+        <props.icon className={cn('w-10 h-10 mb-4 transition-colors', classes.icon)} />
+      )}
+      
       <span className="text-xs font-mono uppercase tracking-[0.2em] text-white/40 group-hover:text-white transition-colors">
         {props.title}
       </span>
@@ -118,32 +133,32 @@ export function MissionControl() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <ControlModule
             title="Pricing Engine"
-            icon={Database}
+            imageUrl="https://picsum.photos/seed/nexus-pricing-engine/200/200"
             color="blue"
             onClick={() => setActiveModal('pricing')}
           />
           <ControlModule
             title="Maintenance"
-            icon={ShieldAlert}
+            imageUrl="https://picsum.photos/seed/nexus-maintenance/200/200"
             color="red"
             onClick={() => setActiveModal('maintenance')}
           />
           <ControlModule
             title="Neural Core"
-            icon={Cpu}
+            imageUrl="https://picsum.photos/seed/nexus-abstract-neural-network/200/200"
             color="purple"
             onClick={() => setActiveModal('logs')}
           />
           <ControlModule
             title="System Terminal"
-            icon={Terminal}
+            imageUrl="https://picsum.photos/seed/nexus-system-terminal/200/200"
             color="blue"
             onClick={() => setActiveModal('logs')}
           />
         </div>
       </div>
 
-      {/* Personnel */}
+      {/* Personnel & Intelligence */}
       <div className="mb-12">
         <div className="flex items-center gap-4 mb-6">
           <h2 className="text-[10px] font-mono uppercase tracking-[0.4em] text-white/20">
@@ -154,15 +169,27 @@ export function MissionControl() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <ControlModule
             title="User Roster"
-            icon={Users}
+            imageUrl="https://picsum.photos/seed/nexus-user-roster/200/200"
             color="green"
             onClick={() => setActiveModal('users')}
           />
           <ControlModule
             title="Activity Logs"
-            icon={Activity}
+            imageUrl="https://picsum.photos/seed/nexus-activity-logs/200/200"
             color="purple"
             onClick={() => setActiveModal('logs')}
+          />
+          <ControlModule
+            title="Code Studio"
+            imageUrl="https://picsum.photos/seed/nexus-code-studio/200/200"
+            color="blue"
+            onClick={() => alert('Code Studio Uplink Initiated')}
+          />
+          <ControlModule
+            title="Commander"
+            imageUrl="https://picsum.photos/seed/nexus-strategic-commander-terminal/200/200"
+            color="red"
+            onClick={() => alert('Commander Protocol Active')}
           />
         </div>
       </div>

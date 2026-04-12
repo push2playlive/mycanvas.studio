@@ -295,23 +295,23 @@ export const Gallery = () => {
             </div>
           </div>
 
-          {/* Neural Forge: Quick Manifestation */}
+          {/* AI Image Generation Section */}
           <div className="mb-12">
             <div className="flex items-center gap-2 mb-4">
-              <Cpu size={14} className="text-neon-cyan" />
-              <h2 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-white/60">Neural Forge</h2>
+              <Sparkles size={14} className="text-neon-cyan" />
+              <h2 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-white/60">AI Image Generation</h2>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
                 <form onSubmit={handleQuickGenerate} className="flex gap-3">
                   <div className="relative flex-1">
-                    <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 text-neon-cyan/40" size={18} />
+                    <Terminal className="absolute left-4 top-1/2 -translate-y-1/2 text-neon-cyan/40" size={18} />
                     <input 
                       type="text" 
                       value={quickPrompt}
                       onChange={(e) => setQuickPrompt(e.target.value)}
-                      placeholder="Enter neural prompt for quick manifestation..." 
+                      placeholder="Enter prompt for neural manifestation..." 
                       className="w-full bg-white/5 border border-white/10 rounded-lg py-4 pl-12 pr-4 text-sm font-mono focus:outline-none focus:border-neon-cyan/50 transition-all shadow-[inset_0_0_20px_rgba(0,0,0,0.2)]"
                     />
                   </div>
@@ -323,12 +323,12 @@ export const Gallery = () => {
                     {isQuickGenerating ? (
                       <>
                         <Loader2 size={16} className="animate-spin" />
-                        Forging...
+                        Generating...
                       </>
                     ) : (
                       <>
                         <Zap size={16} />
-                        Manifest
+                        Generate
                       </>
                     )}
                   </button>

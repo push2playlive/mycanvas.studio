@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, Circle, Plus, Trash2, Calendar, Clock, AlertCircle, ListTodo } from 'lucide-react';
+import { CheckCircle2, Circle, Plus, Trash2, Calendar, Clock, AlertCircle, ListTodo, Link as LinkIcon, Lock } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -14,6 +14,7 @@ interface Task {
   completed: boolean;
   dueDate: string; // ISO string
   priority: 'low' | 'medium' | 'high';
+  dependencies: string[]; // Array of task IDs
 }
 
 export const Tasks = () => {
@@ -38,6 +39,7 @@ export const Tasks = () => {
   const [newTaskText, setNewTaskText] = useState('');
   const [newDueDate, setNewDueDate] = useState('');
   const [newPriority, setNewPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [newDependencies, setNewDependencies] = useState<string[]>([]);
   const [filterPriority, setFilterPriority] = useState<'all' | 'low' | 'medium' | 'high'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed'>('all');
   const [sortBy, setSortBy] = useState<'dueDate' | 'priority'>('dueDate');
@@ -57,14 +59,33 @@ export const Tasks = () => {
       completed: false,
       dueDate: newDueDate || new Date().toISOString(),
       priority: newPriority,
+      dependencies: newDependencies,
     };
 
     setTasks([newTask, ...tasks]);
     setNewTaskText('');
     setNewDueDate('');
+    setNewDependencies([]);
   };
 
   const toggleTask = (id: string) => {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+
+    // If trying to complete, check dependencies
+    if (!task.completed) {
+      const unmetDependencies = task.dependencies.filter(depId => {
+        const depTask = tasks.find(t => t.id === depId);
+        return depTask && !depTask.completed;
+      });
+
+      if (unmetDependencies.length > 0) {
+        const depNames = unmetDependencies.map(depId => tasks.find(t => t.id === depId)?.text).join(', ');
+        alert(`PROTOCOL_ERROR: Dependencies unmet. Complete the following first: ${depNames}`);
+        return;
+      }
+    }
+
     setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
   };
 
@@ -188,6 +209,25 @@ export const Tasks = () => {
                 </button>
               ))}
             </div>
+
+            <div className="flex items-center gap-2 flex-1">
+              <span className="text-[10px] font-mono text-white/20 uppercase">Depends On:</span>
+              <select
+                multiple
+                value={newDependencies}
+                onChange={(e) => {
+                  const select = e.target as HTMLSelectElement;
+                  const options = Array.from(select.selectedOptions, option => option.value);
+                  setNewDependencies(options);
+                }}
+                className="bg-white/5 border border-white/10 rounded px-2 py-1 text-[8px] font-mono text-white/60 focus:outline-none focus:border-neon-cyan/50 min-w-[120px]"
+              >
+                {tasks.map(t => (
+                  <option key={t.id} value={t.id}>{t.text}</option>
+                ))}
+              </select>
+              <p className="text-[8px] font-mono text-white/20 uppercase">Hold Ctrl/Cmd to select multiple</p>
+            </div>
           </div>
         </form>
 
@@ -274,20 +314,35 @@ export const Tasks = () => {
                 <button
                   onClick={() => toggleTask(task.id)}
                   className={cn(
-                    "transition-colors",
+                    "transition-colors relative",
                     task.completed ? "text-neon-green" : "text-white/20 hover:text-white"
                   )}
                 >
                   {task.completed ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+                  {task.dependencies.length > 0 && !task.completed && (
+                    <div className="absolute -top-1 -right-1">
+                      <Lock size={10} className="text-neon-magenta animate-pulse" />
+                    </div>
+                  )}
                 </button>
 
                 <div className="flex-1 min-w-0">
-                  <p className={cn(
-                    "text-sm font-mono transition-all truncate",
-                    task.completed ? "line-through text-white/20" : "text-white/80"
-                  )}>
-                    {task.text}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className={cn(
+                      "text-sm font-mono transition-all truncate",
+                      task.completed ? "line-through text-white/20" : "text-white/80"
+                    )}>
+                      {task.text}
+                    </p>
+                    {task.dependencies.length > 0 && (
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/5 border border-white/10">
+                        <LinkIcon size={8} className="text-white/30" />
+                        <span className="text-[8px] font-mono text-white/30 uppercase tracking-tighter">
+                          {task.dependencies.length} Dep
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex items-center gap-4 mt-1">
                     <div className={cn(
                       "flex items-center gap-1.5 text-[8px] font-mono uppercase tracking-widest",

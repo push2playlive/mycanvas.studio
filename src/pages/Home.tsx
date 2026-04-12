@@ -145,6 +145,9 @@ export function Home() {
           <div className="w-12 h-px bg-white/10" />
         </div>
       </div>
+
+      {/* Nexus Shield Anchor */}
+      <div id="command-nexus-shield" data-tenant="mycanvaslab"></div>
     </div>
   );
 }

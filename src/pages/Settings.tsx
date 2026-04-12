@@ -27,6 +27,18 @@ export const Settings = () => {
   const [persona, setPersona] = useState('Commander');
   const [githubSync, setGithubSync] = useState(true);
 
+  // API Keys
+  const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem('GEMINI_API_KEY') || '');
+  const [supabaseUrl, setSupabaseUrl] = useState(() => localStorage.getItem('SUPABASE_URL') || '');
+  const [supabaseKey, setSupabaseKey] = useState(() => localStorage.getItem('SUPABASE_ANON_KEY') || '');
+
+  const saveApiKeys = () => {
+    localStorage.setItem('GEMINI_API_KEY', geminiKey);
+    localStorage.setItem('SUPABASE_URL', supabaseUrl);
+    localStorage.setItem('SUPABASE_ANON_KEY', supabaseKey);
+    alert('Nexus Vault updated. Neural links re-established.');
+  };
+
   const tabs: { id: SettingsTab, icon: any }[] = [
     { id: 'General', icon: UserIcon },
     { id: 'Nexus Vault', icon: DatabaseIcon },
@@ -132,6 +144,65 @@ export const Settings = () => {
                       <option value="Artist">Artist</option>
                       <option value="Verifier">Verifier</option>
                     </select>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {activeTab === 'Nexus Vault' && (
+              <div className="space-y-12">
+                <section className="settings-panel shadow-shield p-8 glass-panel rounded-xl border border-white/10 bg-white/[0.02]">
+                  <h2 className="text-xl font-bold font-mono uppercase tracking-tight mb-8 flex items-center gap-3 text-neon-magenta">
+                    <Shield size={24} /> Nexus Vault
+                  </h2>
+                  <p className="text-white/40 text-xs font-mono mb-8 uppercase tracking-widest">Secure storage for neural uplink credentials</p>
+                  
+                  <div className="space-y-8">
+                    <div className="setting-group space-y-3">
+                      <label className="block text-[10px] font-mono uppercase tracking-widest text-white/40">Gemini API Key</label>
+                      <div className="relative">
+                        <input 
+                          type="password"
+                          value={geminiKey}
+                          onChange={(e) => setGeminiKey(e.target.value)}
+                          placeholder="Enter Gemini API Key..."
+                          className="nexus-input w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:border-neon-magenta/50 transition-all"
+                        />
+                        <Lock className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                      </div>
+                    </div>
+
+                    <div className="setting-group space-y-3">
+                      <label className="block text-[10px] font-mono uppercase tracking-widest text-white/40">Supabase URL</label>
+                      <input 
+                        type="text"
+                        value={supabaseUrl}
+                        onChange={(e) => setSupabaseUrl(e.target.value)}
+                        placeholder="https://your-project.supabase.co"
+                        className="nexus-input w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:border-neon-magenta/50 transition-all"
+                      />
+                    </div>
+
+                    <div className="setting-group space-y-3">
+                      <label className="block text-[10px] font-mono uppercase tracking-widest text-white/40">Supabase Anon Key</label>
+                      <div className="relative">
+                        <input 
+                          type="password"
+                          value={supabaseKey}
+                          onChange={(e) => setSupabaseKey(e.target.value)}
+                          placeholder="Enter Supabase Anon Key..."
+                          className="nexus-input w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:border-neon-magenta/50 transition-all"
+                        />
+                        <Lock className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={saveApiKeys}
+                      className="w-full py-4 bg-neon-magenta/10 border border-neon-magenta/30 text-neon-magenta font-mono font-bold uppercase tracking-widest rounded-lg hover:bg-neon-magenta/20 transition-all shadow-[0_0_20px_rgba(255,0,255,0.1)]"
+                    >
+                      Commit to Vault
+                    </button>
                   </div>
                 </section>
               </div>

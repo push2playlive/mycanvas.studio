@@ -182,3 +182,22 @@ body {
 .neon-text-cyan {
   @apply text-neon-cyan shadow-[0_0_5px_rgba(0,240,255,0.5)];
 }
+
+/* Nexus Shield Tactical Invisibility */
+#command-nexus-shield {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  opacity: 0.3;
+  filter: grayscale(1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+#command-nexus-shield:hover {
+  opacity: 1;
+  filter: grayscale(0);
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 20px var(--nexus-accent));
+}

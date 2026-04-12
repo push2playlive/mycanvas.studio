@@ -13,6 +13,7 @@ export const AgentSwitcher = () => {
     
     // Broadcast to the V24
     console.log(`[V24] RE-TASKING: Agent ${agent.name} is now in command.`);
+    window.dispatchEvent(new CustomEvent('nexus-agent-switch', { detail: { agentKey } }));
     
     // Save to localStorage for persistence
     localStorage.setItem('nexus-active-agent', agentKey);

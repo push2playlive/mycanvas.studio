@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { AGENTS } from '../lib/constants';
 import { TacticalMap } from '../components/TacticalMap';
 import { Send, Sparkles, Shield, Cpu, Activity, Database, Globe, Video, Play, Download, X, Terminal, Zap, Lock, Eye } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { LiveConsole } from '../components/dashboard/LiveConsole';
-import { generateAppCode, generateVideo } from '../services/gemini';
+import { generateAppCode, generateVideo, chatWithAgent } from '../services/gemini';
 import { Sandpack } from "@codesandbox/sandpack-react";
 import { ThreatMatrix } from '../components/dashboard/ThreatMatrix';
 import { UserIntentEngine } from '../components/dashboard/UserIntentEngine';
@@ -15,8 +14,10 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import { AGENT_MODES } from '../nexus/AgentProfiles';
+
 export const CommandDeck = () => {
-  const [selectedAgent, setSelectedAgent] = useState(AGENTS[0]);
+  const [selectedAgent, setSelectedAgent] = useState(Object.values(AGENT_MODES)[0]);
   const [message, setMessage] = useState('');
   const [isBuilding, setIsBuilding] = useState(false);
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
@@ -25,6 +26,34 @@ export const CommandDeck = () => {
   const [viewMode, setViewMode] = useState<'monitor' | 'build' | 'video'>('monitor');
   const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'agent', text: string }[]>([]);
   const [buildStatus, setBuildStatus] = useState('');
+
+  // Sync with global agent
+  React.useEffect(() => {
+    const handleGlobalSwitch = (e: any) => {
+      const { agentKey } = e.detail;
+      if (AGENT_MODES[agentKey]) {
+        setSelectedAgent(AGENT_MODES[agentKey]);
+      }
+    };
+
+    const savedAgentKey = localStorage.getItem('nexus-active-agent');
+    if (savedAgentKey && AGENT_MODES[savedAgentKey]) {
+      setSelectedAgent(AGENT_MODES[savedAgentKey]);
+    }
+
+    window.addEventListener('nexus-agent-switch', handleGlobalSwitch);
+    return () => window.removeEventListener('nexus-agent-switch', handleGlobalSwitch);
+  }, []);
+
+  const handleAgentSelect = (agent: any) => {
+    setSelectedAgent(agent);
+    const agentKey = Object.keys(AGENT_MODES).find(key => AGENT_MODES[key].id === agent.id);
+    if (agentKey) {
+      document.documentElement.style.setProperty('--nexus-accent', agent.color);
+      localStorage.setItem('nexus-active-agent', agentKey);
+      window.dispatchEvent(new CustomEvent('nexus-agent-switch', { detail: { agentKey } }));
+    }
+  };
 
   const handleSendMessage = async (forceBuild = false) => {
     if (!message.trim() || isBuilding) return;
@@ -123,11 +152,20 @@ export const CommandDeck = () => {
         setIsBuilding(false);
       }
     } else {
-      // Just a normal chat message
-      setChatHistory(prev => [...prev, { 
-        role: 'agent', 
-        text: `Acknowledged. Processing request in ${selectedAgent.role} mode...` 
-      }]);
+      // Real chat with agent
+      try {
+        const response = await chatWithAgent(userPrompt, selectedAgent.systemPrompt, chatHistory);
+        setChatHistory(prev => [...prev, { 
+          role: 'agent', 
+          text: response 
+        }]);
+      } catch (error) {
+        console.error("Chat failed:", error);
+        setChatHistory(prev => [...prev, { 
+          role: 'agent', 
+          text: `ERROR: Neural link unstable. Could not retrieve response from ${selectedAgent.name}.` 
+        }]);
+      }
     }
   };
 
@@ -313,14 +351,13 @@ export const CommandDeck = () => {
             </div>
           </div>
           
-          {/* Agent Selector */}
           <div className="p-4 grid grid-cols-1 gap-2">
-            {AGENTS.map((agent) => {
+            {Object.values(AGENT_MODES).map((agent) => {
               const isActive = selectedAgent.id === agent.id;
               return (
                 <button
                   key={agent.id}
-                  onClick={() => setSelectedAgent(agent)}
+                  onClick={() => handleAgentSelect(agent)}
                   className={cn(
                     "p-3 rounded-md border transition-all text-left relative overflow-hidden group",
                     isActive ? "bg-white/10 border-white/20" : "bg-white/5 border-white/5 hover:border-white/10"

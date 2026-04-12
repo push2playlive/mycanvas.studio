@@ -36,6 +36,9 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
       
       <Dock />
       <SecurityPulseMonitor />
+
+      {/* Nexus Shield Anchor */}
+      <div id="command-nexus-shield" data-tenant="mycanvaslab"></div>
     </div>
   );
 };
